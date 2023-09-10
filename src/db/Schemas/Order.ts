@@ -3,12 +3,10 @@ const { Schema } = mongoose;
 
 const orderSchema = new Schema(
     {
-        userId: { String, required: true },
-        carNumber: { String, required: true },
-        carBrand: { String, required: true },
-        additionalService: { String, required: false, default: null },
-        serviceTime: { Date, required: true },
-        partOfTheDay: { String, required: true },
+        userId: { type: String, required: true },
+        carBrand: { type: String, required: true },
+        carNumber: { type: String, required: true },
+        serviceDate: { type: Date, required: true },
     },
     { timestamps: true }
 );

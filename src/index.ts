@@ -9,15 +9,15 @@ import { EnvNames } from "./enums/env.names";
 const app = express();
 
 const HOST = getEnv(EnvNames.HOST);
-const PORT = getEnv(EnvNames.PORT);
+const PORT = getEnv(EnvNames.PORT) || 3000;
 
 startDb();
 telegram_bot();
 
 app.get("/", (req, res) => {
-  res.send("Hello World!");
+    res.send("Hello World!");
 });
 
 app.listen(PORT, () => {
-  console.log(`Server started => http://${HOST}:${PORT} ✅`);
+    console.log(`Server started => ${HOST}${PORT} ✅`);
 });

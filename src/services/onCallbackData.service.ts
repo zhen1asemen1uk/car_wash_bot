@@ -17,7 +17,7 @@ export const onCallbackDataListner = (bot: TelegramBot) => {
         const msgFromId = query?.from?.id;
         const { data } = query;
 
-        if (!msgFromId || !chatId || !data) return;
+        if (!msgFromId || !chatId || !data) return; // TO DO: add error handler
         console.log("-----------------------");
         // console.log("query", query);
         // console.log("query?.message", query?.message);
@@ -35,7 +35,8 @@ export const onCallbackDataListner = (bot: TelegramBot) => {
             // console.log("msgFromId", msgFromId);
 
             const user = await User.findOne({ telegramId: +msgFromId });
-            if (!user) return;
+            if (!user) return; // TO DO: add error handler
+
             const strId = user?._id?.toString();
             // console.log("strId", strId);
 

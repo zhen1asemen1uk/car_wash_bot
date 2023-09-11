@@ -12,7 +12,7 @@ export const onContactListner = (bot: TelegramBot) => {
 
         // the user's id that is receiving the message
         const msgFromId = msg?.from?.id;
-        if (!msgFromId) return;
+        if (!msgFromId) return; // TO DO: add error handler
 
         // check if the msg is from the user you're expecting
         if (msgFromId === contact_user_id) {

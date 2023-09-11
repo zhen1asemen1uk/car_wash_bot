@@ -10,6 +10,7 @@ import { ask } from "../utils/ask";
 import { keybordWithDates } from "../utils/keybords";
 
 import { sendOrdersToUser } from "../utils/sendOrdersToUser";
+import { User } from "../db/Schemas/User";
 
 export const onMessageListner = (bot: TelegramBot) => {
     bot.on("message", async (msg: Message) => {
@@ -18,7 +19,7 @@ export const onMessageListner = (bot: TelegramBot) => {
         const msgFromId = msg?.from?.id;
         console.log("msg", msg);
 
-        if (!msgFromId || !chatId) return;
+        if (!msgFromId || !chatId) return; // TO DO: add error handler
 
         switch (text) {
             case TriggersBot.GO_MAIN:
@@ -53,44 +54,64 @@ export const onMessageListner = (bot: TelegramBot) => {
             case TriggersBot.MY_ORDERS:
                 // find all orders by user id from today and 11 working days
 
-                const orders = await Order.find({
-                    telegramId: msgFromId,
-                    serviceDate: {
-                        $gte: moment().startOf("day").utc().toDate(),
-                        $lte: moment()
+                try {
+                    const user = await User.findOne({ telegramId: +msgFromId });
+                    if (!user) return; // TO DO: add error message
+
+                    const orders = await Order.find({
+                        userId: user._id,
+                        serviceDate: {
+                            $gte: moment().startOf("day").utc().toDate(),
+                            $lte: moment()
+                                .add(11, "days")
+                                .endOf("day")
+                                .utc()
+                                .toDate(),
+                        },
+                    });
+                    console.log(
+                        moment().startOf("day").utc().format("DD.MM.YYYY")
+                    );
+                    console.log(
+                        moment()
                             .add(11, "days")
                             .endOf("day")
                             .utc()
-                            .toDate(),
-                    },
-                });
+                            .format("DD.MM.YYYY")
+                    );
 
-                if (!orders.length)
-                    return await bot.sendMessage(chatId, `Тут пусто`, {
-                        reply_markup: {
-                            keyboard: [
-                                [
-                                    { text: TriggersBot.MY_ORDERS },
-                                    { text: TriggersBot.ADD_ORDER },
-                                ],
-                            ],
-                        },
-                    });
+                    // console.log("msgFromId", msgFromId);
+                    // console.log("orders", orders);
 
-                return await bot.sendMessage(
-                    chatId,
-                    "Замовлення:\n" + sendOrdersToUser({ orders }),
-                    {
-                        reply_markup: {
-                            keyboard: [
-                                [
-                                    { text: TriggersBot.MY_ORDERS },
-                                    { text: TriggersBot.ADD_ORDER },
+                    if (!orders.length)
+                        return await bot.sendMessage(chatId, `Тут пусто`, {
+                            reply_markup: {
+                                keyboard: [
+                                    [
+                                        { text: TriggersBot.MY_ORDERS },
+                                        { text: TriggersBot.ADD_ORDER },
+                                    ],
                                 ],
-                            ],
-                        },
-                    }
-                );
+                            },
+                        });
+
+                    return await bot.sendMessage(
+                        chatId,
+                        "Замовлення:\n" + sendOrdersToUser({ orders }),
+                        {
+                            reply_markup: {
+                                keyboard: [
+                                    [
+                                        { text: TriggersBot.MY_ORDERS },
+                                        { text: TriggersBot.ADD_ORDER },
+                                    ],
+                                ],
+                            },
+                        }
+                    );
+                } catch (error) {
+                    console.log(error);
+                }
 
             case TriggersBot.ADD_ORDER:
                 // 1, and 2 questions
@@ -125,7 +146,7 @@ export const onMessageListner = (bot: TelegramBot) => {
                         $lte: todayDate,
                     },
                 }).populate("userId");
-                console.log("tomorrowOrders", todayOrders);
+                // console.log("tomorrowOrders", todayOrders);
 
                 if (!todayOrders.length)
                     return await bot.sendMessage(chatId, `Тут пусто`, {

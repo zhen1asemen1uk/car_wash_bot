@@ -88,13 +88,19 @@ export const onMessageListner = (bot: TelegramBot) => {
                     });
 
                 const resp = orders.map((order) => {
-                    return `                               
-    Замовлення:
-    Машина: ${order.carBrand}
-    Номер: ${order.carNumber}
-    Дата: ${moment(order.serviceDate).format("DD.MM.YYYY")}
-    Частина дня: ${partOfDay(order.serviceDate)}
-                        `;
+                    return (
+                        "Замовлення:\n Машина:" +
+                        order.carBrand +
+                        +"\n" +
+                        "Номер:" +
+                        order.carNumber +
+                        +"\n" +
+                        "Дата:" +
+                        moment(order.serviceDate).format("DD.MM.YYYY") +
+                        +"\n" +
+                        "Частина дня:" +
+                        partOfDay(order.serviceDate)
+                    );
                 });
 
                 return await bot.sendMessage(chatId, resp.join("\n"), {

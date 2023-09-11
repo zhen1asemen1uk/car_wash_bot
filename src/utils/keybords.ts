@@ -42,10 +42,10 @@ export const keybordWithDates = (
         console.log("formattedDataEndDate", formattedDataEndDate);
 
         const formattedTextStart =
-            date.format("DD.MM.YYYY") + "| з 9:00 до 13:00 ☀️";
+            date.format("DD.MM.YYYY") + " | з 9:00 до 13:00 ☀️";
 
         const formattedTextEnd =
-            date.format("DD.MM.YYYY") + "| з 13:00 до 18:00 🌆";
+            date.format("DD.MM.YYYY") + " | з 13:00 до 18:00 🌆";
 
         newKeyboard.push(
             [

@@ -17,7 +17,6 @@ export const onMessageListner = (bot: TelegramBot) => {
         const chatId = msg.chat.id;
         const text = msg.text;
         const msgFromId = msg?.from?.id;
-        console.log("msg", msg);
 
         if (!msgFromId || !chatId) return; // TO DO: add error handler
 
@@ -53,7 +52,6 @@ export const onMessageListner = (bot: TelegramBot) => {
 
             case TriggersBot.MY_ORDERS:
                 // find all orders by user id from today and 11 working days
-
                 try {
                     const user = await User.findOne({ telegramId: +msgFromId });
                     if (!user) return; // TO DO: add error message
@@ -69,19 +67,6 @@ export const onMessageListner = (bot: TelegramBot) => {
                                 .toDate(),
                         },
                     });
-                    console.log(
-                        moment().startOf("day").utc().format("DD.MM.YYYY")
-                    );
-                    console.log(
-                        moment()
-                            .add(11, "days")
-                            .endOf("day")
-                            .utc()
-                            .format("DD.MM.YYYY")
-                    );
-
-                    // console.log("msgFromId", msgFromId);
-                    // console.log("orders", orders);
 
                     if (!orders.length)
                         return await bot.sendMessage(chatId, `Тут пусто`, {
@@ -122,7 +107,7 @@ export const onMessageListner = (bot: TelegramBot) => {
 
                 const answers: IAnswers = await ask({ bot, chatId, questions });
 
-                const keyboard = keybordWithDates(answers);
+                const keyboard = await keybordWithDates(answers);
 
                 // 3 question
                 return await bot.sendMessage(
@@ -146,7 +131,6 @@ export const onMessageListner = (bot: TelegramBot) => {
                         $lte: todayDate,
                     },
                 }).populate("userId");
-                // console.log("tomorrowOrders", todayOrders);
 
                 if (!todayOrders.length)
                     return await bot.sendMessage(chatId, `Тут пусто`, {

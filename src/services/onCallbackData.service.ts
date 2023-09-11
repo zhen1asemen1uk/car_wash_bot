@@ -6,6 +6,8 @@ import { IAnswers } from "../types/types";
 import { Text } from "../enums/official.text";
 import { TriggersBot } from "../enums/triggers.bot";
 import { Order } from "../db/Schemas/Order";
+import { User } from "../db/Schemas/User";
+import { ObjectId } from "mongodb";
 
 export const onCallbackDataListner = (bot: TelegramBot) => {
     // Listen for any kind of message. There are different kinds of messages.
@@ -30,11 +32,20 @@ export const onCallbackDataListner = (bot: TelegramBot) => {
             const dataArr: string[] = JSON.parse(data);
 
             const answers: IAnswers = {};
+            // console.log("msgFromId", msgFromId);
+
+            const user = await User.findOne({ telegramId: +msgFromId });
+            if (!user) return;
+            const strId = user?._id?.toString();
+            // console.log("strId", strId);
+
+            const userId = new ObjectId(+strId);
+            // console.log("userId", userId);
 
             answers["carBrand"] = dataArr[0];
             answers["carNumber"] = dataArr[1];
             answers["serviceDate"] = moment.unix(+dataArr[2]).toDate();
-            answers["userId"] = +msgFromId;
+            answers["userId"] = strId;
 
             // create order
             await Order.create({ ...answers });

@@ -1,25 +1,15 @@
-import TelegramBot, {
-    Message,
-    KeyboardButton,
-    InlineKeyboardButton,
-} from "node-telegram-bot-api";
+import TelegramBot, { Message } from "node-telegram-bot-api";
 import moment from "moment";
-import { ObjectId } from "mongodb";
 
-import { EnvNames } from "../enums/env.names";
 import { TriggersBot } from "../enums/triggers.bot";
 
-import { User } from "../db/Schemas/User";
-
-import { getEnv } from "../helpers/env_helper";
-
-import { sendMessageInParts } from "../utils/send-message-in-parts";
 import { Text } from "../enums/official.text";
 import { Order } from "../db/Schemas/Order";
 import { IAnswers, IQuestion } from "../types/types";
 import { ask } from "../utils/ask";
 import { keybordWithDates } from "../utils/keybords";
-import { partOfDay } from "../utils/noon";
+
+import { sendOrdersToUser } from "../utils/sendOrdersToUser";
 
 export const onMessageListner = (bot: TelegramBot) => {
     bot.on("message", async (msg: Message) => {
@@ -64,7 +54,7 @@ export const onMessageListner = (bot: TelegramBot) => {
                 // find all orders by user id from today and 11 working days
 
                 const orders = await Order.find({
-                    userId: msgFromId,
+                    telegramId: msgFromId,
                     serviceDate: {
                         $gte: moment().startOf("day").utc().toDate(),
                         $lte: moment()
@@ -87,17 +77,9 @@ export const onMessageListner = (bot: TelegramBot) => {
                         },
                     });
 
-                const resp = orders.map((order) => {
-                    return `
-Машина: ${order.carBrand}
-Номер: ${order.carNumber}
-Дата: ${moment(order.serviceDate).format("DD.MM.YYYY")}
-Частина дня:${partOfDay(order.serviceDate)}`;
-                });
-
                 return await bot.sendMessage(
                     chatId,
-                    "Замовлення:\n" + resp.join("\n"),
+                    "Замовлення:\n" + sendOrdersToUser({ orders }),
                     {
                         reply_markup: {
                             keyboard: [
@@ -122,12 +104,155 @@ export const onMessageListner = (bot: TelegramBot) => {
                 const keyboard = keybordWithDates(answers);
 
                 // 3 question
-                await bot.sendMessage(chatId, `${Text.CHOOSE_PART_OF_DAY}`, {
-                    reply_markup: {
-                        inline_keyboard: keyboard,
-                        resize_keyboard: true,
+                return await bot.sendMessage(
+                    chatId,
+                    `${Text.CHOOSE_PART_OF_DAY}`,
+                    {
+                        reply_markup: {
+                            inline_keyboard: keyboard,
+                            resize_keyboard: true,
+                        },
+                    }
+                );
+
+            case TriggersBot.TODAY_ORDERS:
+                const todayDate = moment().endOf("day").utc().toDate();
+                const formattedDate = moment(todayDate).format("DD.MM.YYYY");
+
+                const todayOrders = await Order.find({
+                    serviceDate: {
+                        $gte: moment().startOf("day").utc().toDate(),
+                        $lte: todayDate,
                     },
-                });
+                }).populate("userId");
+                console.log("tomorrowOrders", todayOrders);
+
+                if (!todayOrders.length)
+                    return await bot.sendMessage(chatId, `Тут пусто`, {
+                        reply_markup: {
+                            keyboard: [
+                                [{ text: TriggersBot.TODAY_ORDERS }],
+                                [{ text: TriggersBot.TOMORROW_ORDERS }],
+                                [{ text: TriggersBot.ALL_ORDER }],
+                            ],
+                        },
+                    });
+
+                return await bot.sendMessage(
+                    chatId,
+                    `Сьогодні (${formattedDate})👇🏻: ${sendOrdersToUser({
+                        orders: todayOrders,
+                        isAdmin: true,
+                    })}`,
+                    {
+                        reply_markup: {
+                            keyboard: [
+                                [{ text: TriggersBot.TODAY_ORDERS }],
+                                [{ text: TriggersBot.TOMORROW_ORDERS }],
+                                [{ text: TriggersBot.ALL_ORDER }],
+                            ],
+                            resize_keyboard: true,
+                        },
+                    }
+                );
+
+            case TriggersBot.TOMORROW_ORDERS:
+                const tomorrowDate = moment()
+                    .add(1, "days")
+                    .endOf("day")
+                    .utc()
+                    .toDate();
+
+                const formattedTomorrowDate =
+                    moment(tomorrowDate).format("DD.MM.YYYY");
+
+                const tomorrowOrders = await Order.find({
+                    serviceDate: {
+                        $gte: moment()
+                            .add(1, "days")
+                            .startOf("day")
+                            .utc()
+                            .toDate(),
+                        $lte: tomorrowDate,
+                    },
+                }).populate("userId");
+
+                if (!tomorrowOrders.length)
+                    return await bot.sendMessage(chatId, `Тут пусто`, {
+                        reply_markup: {
+                            keyboard: [
+                                [{ text: TriggersBot.TODAY_ORDERS }],
+                                [{ text: TriggersBot.TOMORROW_ORDERS }],
+                                [{ text: TriggersBot.ALL_ORDER }],
+                            ],
+                        },
+                    });
+
+                return await bot.sendMessage(
+                    chatId,
+                    `Завтра (${formattedTomorrowDate})👇🏻:${sendOrdersToUser({
+                        orders: tomorrowOrders,
+                        isAdmin: true,
+                    })}`,
+                    {
+                        reply_markup: {
+                            keyboard: [
+                                [{ text: TriggersBot.TODAY_ORDERS }],
+                                [{ text: TriggersBot.TOMORROW_ORDERS }],
+                                [{ text: TriggersBot.ALL_ORDER }],
+                            ],
+                            resize_keyboard: true,
+                        },
+                    }
+                );
+
+            case TriggersBot.ALL_ORDER:
+                const elevenDays = moment()
+                    .add(11, "days")
+                    .endOf("day")
+                    .utc()
+                    .toDate();
+
+                const formattedElevenDays =
+                    moment(elevenDays).format("DD.MM.YYYY");
+
+                const allOrders = await Order.find({
+                    serviceDate: {
+                        $gte: moment().startOf("day").utc().toDate(),
+                        $lte: elevenDays,
+                    },
+                }).populate("userId");
+
+                if (!allOrders.length)
+                    return await bot.sendMessage(chatId, `Тут пусто`, {
+                        reply_markup: {
+                            keyboard: [
+                                [{ text: TriggersBot.TODAY_ORDERS }],
+                                [{ text: TriggersBot.TOMORROW_ORDERS }],
+                                [{ text: TriggersBot.ALL_ORDER }],
+                            ],
+                        },
+                    });
+
+                return await bot.sendMessage(
+                    chatId,
+                    `Всі записи до (${formattedElevenDays})👇🏻:${sendOrdersToUser(
+                        {
+                            orders: allOrders,
+                            isAdmin: true,
+                        }
+                    )}`,
+                    {
+                        reply_markup: {
+                            keyboard: [
+                                [{ text: TriggersBot.TODAY_ORDERS }],
+                                [{ text: TriggersBot.TOMORROW_ORDERS }],
+                                [{ text: TriggersBot.ALL_ORDER }],
+                            ],
+                            resize_keyboard: true,
+                        },
+                    }
+                );
 
             default:
                 break;

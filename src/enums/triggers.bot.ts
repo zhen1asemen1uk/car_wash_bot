@@ -6,4 +6,7 @@ export enum TriggersBot {
     NEXT = "Далі ➡️",
     CANCEL = "Відмінити ❌",
     UNEXPECTED_COMMAND = "Нерозпізнана команда 🤷🏼‍♂️",
+    TODAY_ORDERS = "Записи на сьогодні 📅",
+    TOMORROW_ORDERS = "Записи на завтра 📅",
+    ALL_ORDER = "Всі записи 📅",
 }

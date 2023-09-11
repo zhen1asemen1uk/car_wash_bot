@@ -1,15 +1,12 @@
 import TelegramBot from "node-telegram-bot-api";
 
-import { EnvNames } from "../enums/env.names";
 import { TriggersBot } from "../enums/triggers.bot";
-
 import { User } from "../db/Schemas/User";
-import { getEnv } from "../helpers/env_helper";
+
 import { Text } from "../enums/official.text";
+import { Roles } from "../enums/roles";
 
 // replace the value below with the Telegram TELEGRAM_API_TOKEN you receive from @BotFather
-
-const HOST = getEnv(EnvNames.HOST);
 
 export const onTextListner = (bot: TelegramBot) => {
     // listen for messages that match the /start command
@@ -38,6 +35,21 @@ export const onTextListner = (bot: TelegramBot) => {
                 `${Text.SHARE_PHONE_NUMBER_PLS}:`,
                 {
                     reply_markup: keyboard,
+                }
+            );
+        } else if (user.role.includes(Roles.ADMIN)) {
+            return await bot.sendMessage(
+                chatId,
+                `${Text.HI_ADMIN}, ${user.fullName} 👋🏻`,
+                {
+                    reply_markup: {
+                        keyboard: [
+                            [{ text: TriggersBot.TODAY_ORDERS }],
+                            [{ text: TriggersBot.TOMORROW_ORDERS }],
+                            [{ text: TriggersBot.ALL_ORDER }],
+                        ],
+                        resize_keyboard: true,
+                    },
                 }
             );
         } else {

@@ -1,5 +1,7 @@
+import { ObjectId } from "mongodb";
+
 export interface IAnswers {
-    [key: string]: string | number | Date;
+    [key: string]: string | number | Date | ObjectId;
 }
 
 export interface IQuestion {

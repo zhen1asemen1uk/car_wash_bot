@@ -25,7 +25,7 @@ export const onContactListner = (bot: TelegramBot) => {
                     username: msg?.from?.username,
                     fullName: msg?.from?.first_name,
                     telegramId: msgFromId,
-                    phone: phone_number,
+                    phoneNumber: phone_number,
                 });
 
                 return await bot.sendMessage(

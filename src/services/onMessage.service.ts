@@ -88,16 +88,11 @@ export const onMessageListner = (bot: TelegramBot) => {
                     });
 
                 const resp = orders.map((order) => {
-                    return (
-                        "\nМашина: " +
-                        order.carBrand +
-                        +"\nНомер: " +
-                        order.carNumber +
-                        +"\nДата: " +
-                        moment(order.serviceDate).format("DD.MM.YYYY") +
-                        +"\nЧастина дня: " +
-                        partOfDay(order.serviceDate)
-                    );
+                    return `
+Машина: ${order.carBrand}
+Номер: ${order.carNumber}
+Дата: ${moment(order.serviceDate).format("DD.MM.YYYY")}
+Частина дня:${partOfDay(order.serviceDate)}`;
                 });
 
                 return await bot.sendMessage(

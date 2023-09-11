@@ -15,7 +15,7 @@ startDb();
 telegram_bot();
 
 app.get("/", (req, res) => {
-    res.send("Hello World!");
+    res.send("<h1>Bot started ⚡️</h1>");
 });
 
 app.listen(PORT, () => {

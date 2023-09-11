@@ -145,6 +145,7 @@ export const onMessageListner = (bot: TelegramBot) => {
                         isAdmin: true,
                     })}`,
                     {
+                        parse_mode: "Markdown",
                         reply_markup: {
                             keyboard: [
                                 [{ text: TriggersBot.TODAY_ORDERS }],
@@ -195,6 +196,7 @@ export const onMessageListner = (bot: TelegramBot) => {
                         isAdmin: true,
                     })}`,
                     {
+                        parse_mode: "Markdown",
                         reply_markup: {
                             keyboard: [
                                 [{ text: TriggersBot.TODAY_ORDERS }],
@@ -243,6 +245,7 @@ export const onMessageListner = (bot: TelegramBot) => {
                         }
                     )}`,
                     {
+                        parse_mode: "Markdown",
                         reply_markup: {
                             keyboard: [
                                 [{ text: TriggersBot.TODAY_ORDERS }],

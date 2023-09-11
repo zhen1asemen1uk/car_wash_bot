@@ -12,18 +12,18 @@ export const sendOrdersToUser = ({
 }) => {
     const formattedOrders = orders.map((order) => {
         return `
------------------------------------------------
+-------------------------------------------
         ${
             isAdmin
                 ? `
 Ім'я: ${order?.userId?.fullName}
-Телефон: +${+order?.userId?.phoneNumber}
+Номер: [+${+order?.userId?.phoneNumber}](+${+order?.userId?.phoneNumber})
 Telegram: @${order?.userId?.username}
 `
                 : ""
         }
 Машина: ${order.carBrand}
-Номер: ${order.carNumber}
+Номер автомобіля: ${order.carNumber}
 Дата: ${moment(order.serviceDate).format("DD.MM.YYYY")}
 Частина дня: ${partOfDay(order.serviceDate as Date)}`;
     });

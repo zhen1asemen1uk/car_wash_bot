@@ -89,30 +89,31 @@ export const onMessageListner = (bot: TelegramBot) => {
 
                 const resp = orders.map((order) => {
                     return (
-                        "Замовлення:\n Машина:" +
+                        "\nМашина: " +
                         order.carBrand +
-                        +"\n" +
-                        "Номер:" +
+                        +"\nНомер: " +
                         order.carNumber +
-                        +"\n" +
-                        "Дата:" +
+                        +"\nДата: " +
                         moment(order.serviceDate).format("DD.MM.YYYY") +
-                        +"\n" +
-                        "Частина дня:" +
+                        +"\nЧастина дня: " +
                         partOfDay(order.serviceDate)
                     );
                 });
 
-                return await bot.sendMessage(chatId, resp.join("\n"), {
-                    reply_markup: {
-                        keyboard: [
-                            [
-                                { text: TriggersBot.MY_ORDERS },
-                                { text: TriggersBot.ADD_ORDER },
+                return await bot.sendMessage(
+                    chatId,
+                    "Замовлення:\n" + resp.join("\n"),
+                    {
+                        reply_markup: {
+                            keyboard: [
+                                [
+                                    { text: TriggersBot.MY_ORDERS },
+                                    { text: TriggersBot.ADD_ORDER },
+                                ],
                             ],
-                        ],
-                    },
-                });
+                        },
+                    }
+                );
 
             case TriggersBot.ADD_ORDER:
                 // 1, and 2 questions

@@ -85,10 +85,14 @@ export const onMessageListner = (bot: TelegramBot) => {
                         "Замовлення:\n" + sendOrdersToUser({ orders }),
                         {
                             reply_markup: {
-                                keyboard: [
+                                inline_keyboard: [
                                     [
-                                        { text: TriggersBot.MY_ORDERS },
-                                        { text: TriggersBot.ADD_ORDER },
+                                        {
+                                            text: `Видалити ${moment(
+                                                orders[0].serviceDate
+                                            ).format("DD.MM.YYYY")}`,
+                                            callback_data: `{"removeId":"${orders[0]._id}"}`,
+                                        },
                                     ],
                                 ],
                             },

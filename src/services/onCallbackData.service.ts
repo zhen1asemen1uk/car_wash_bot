@@ -23,80 +23,124 @@ export const onCallbackDataListner = (bot: TelegramBot) => {
 
         if (!msgFromId || !chatId || !data) return; // TO DO: add error handler
         // console.log("-----------------------");
-        // // console.log("query", query);
-        // // console.log("query?.message", query?.message);
-        // // console.log("text", text);
-        // // console.log("data", data);
+        // console.log("query", query);
+        // console.log("query?.message", query?.message);
+        // console.log("text =>", text);
+        // console.log("data =>", data);
         // console.log("-----------------------");
 
         // const dateRegex = /^\d{2}\.\d{2}\.\d{4}$/;
         // const unixTimeStampPattern = /^\d{10}$/;
 
-        try {
-            const dataArr: string[] = JSON.parse(data);
-            const answers: IAnswers = {};
-            const formettedToDate = moment.unix(+dataArr[2]).toDate();
+        // remove order
+        if (data?.includes("removeId")) {
+            try {
+                const parsedObj = JSON.parse(data);
 
-            const user = await User.findOne({ telegramId: +msgFromId });
-            if (!user) return; // TO DO: add error handler
+                const removedOrder = await Order.findByIdAndRemove({
+                    _id: parsedObj.removeId,
+                });
 
-            const strId = user!._id.toString();
-
-            answers["carBrand"] = dataArr[0];
-            answers["carNumber"] = dataArr[1];
-            answers["serviceDate"] = moment(formettedToDate).toDate(); // maybe need .utc()
-            answers["userId"] = strId;
-
-            const userChecker = await checkUser({
-                bot,
-                user,
-                chatId,
-                answers,
-                msgFromId,
-            });
-
-            const orderChecker = await checkOrder({
-                formettedToDate,
-                bot,
-                chatId,
-                answers,
-            });
-
-            if (!userChecker || !orderChecker) return; // TO DO: add error handler
-
-            // create order
-            await Order.create({ ...answers });
-
-            await bot.sendMessage(
-                chatId,
-                `${Text.ORDER_CREATED}\n*(${moment
-                    .unix(+dataArr[2])
-                    .format("DD.MM.YYYY")}) ${partOfDay(formettedToDate)}*`,
-                {
-                    parse_mode: "Markdown",
-                    reply_markup: {
-                        keyboard: [
-                            [
-                                { text: TriggersBot.MY_ORDERS },
-                                { text: TriggersBot.ADD_ORDER },
-                            ],
-                        ],
-                    },
+                if (removedOrder) {
+                    console.log(
+                        `Order with ID ${parsedObj.removeId} was successfully removed.`
+                    );
+                    await bot.sendMessage(
+                        chatId,
+                        `${Text.ORDER_REMOVED}\n*(${moment(
+                            removedOrder.serviceDate
+                        ).format("DD.MM.YYYY")}) ${partOfDay(
+                            moment(removedOrder.serviceDate).toDate()
+                        )}*`,
+                        {
+                            parse_mode: "Markdown",
+                            reply_markup: {
+                                keyboard: [[{ text: TriggersBot.ADD_ORDER }]],
+                            },
+                        }
+                    );
+                } else {
+                    return sendError({
+                        bot,
+                        error: `Order with ID ${parsedObj.removeId} was not found`,
+                        chatId,
+                    });
                 }
-            );
-        } catch (error) {
-            sendError({
-                bot,
-                error,
-                chatId,
-                errMessage: Text.SOMETHING_WENT_WRONG,
-                arrBtns: [
-                    [
-                        { text: TriggersBot.MY_ORDERS },
-                        { text: TriggersBot.ADD_ORDER },
+            } catch (error) {
+                return sendError({
+                    bot,
+                    error,
+                    chatId,
+                });
+            }
+        } else {
+            // create order
+            try {
+                const dataArr: string[] = JSON.parse(data);
+                const answers: IAnswers = {};
+                const formettedToDate = moment.unix(+dataArr[2]).toDate();
+
+                const user = await User.findOne({ telegramId: +msgFromId });
+                if (!user) return; // TO DO: add error handler
+
+                const strId = user!._id.toString();
+
+                answers["carBrand"] = dataArr[0];
+                answers["carNumber"] = dataArr[1];
+                answers["serviceDate"] = moment(formettedToDate).toDate(); // maybe need .utc()
+                answers["userId"] = strId;
+
+                const userChecker = await checkUser({
+                    bot,
+                    user,
+                    chatId,
+                    answers,
+                    msgFromId,
+                });
+
+                const orderChecker = await checkOrder({
+                    formettedToDate,
+                    bot,
+                    chatId,
+                    answers,
+                });
+
+                if (!userChecker || !orderChecker) return; // TO DO: add error handler
+
+                // create order
+                await Order.create({ ...answers });
+
+                return await bot.sendMessage(
+                    chatId,
+                    `${Text.ORDER_CREATED}\n*(${moment
+                        .unix(+dataArr[2])
+                        .format("DD.MM.YYYY")}) ${partOfDay(formettedToDate)}*`,
+                    {
+                        parse_mode: "Markdown",
+                        reply_markup: {
+                            keyboard: [
+                                [
+                                    { text: TriggersBot.MY_ORDERS },
+                                    { text: TriggersBot.ADD_ORDER },
+                                ],
+                            ],
+                        },
+                    }
+                );
+            } catch (error) {
+                return sendError({
+                    bot,
+                    error,
+                    chatId,
+                    errMessage: Text.SOMETHING_WENT_WRONG,
+                    arrBtns: [
+                        [
+                            { text: TriggersBot.MY_ORDERS },
+                            { text: TriggersBot.ADD_ORDER },
+                        ],
                     ],
-                ],
-            });
+                });
+            }
         }
     });
 };

@@ -12,6 +12,8 @@ import { sendError } from "../utils/error";
 import { checkOrder, checkUser } from "../utils/checkers";
 
 import { IAnswers } from "../types/types";
+import { Roles } from "../enums/roles";
+import { sendOrdersToUser } from "../utils/sendOrdersToUser";
 
 export const onCallbackDataListner = (bot: TelegramBot) => {
     // Listen for any kind of message. There are different kinds of messages.
@@ -108,9 +110,9 @@ export const onCallbackDataListner = (bot: TelegramBot) => {
                 if (!userChecker || !orderChecker) return; // TO DO: add error handler
 
                 // create order
-                await Order.create({ ...answers });
+                const newOrder = await Order.create({ ...answers });
 
-                return await bot.sendMessage(
+                await bot.sendMessage(
                     chatId,
                     `${Text.ORDER_CREATED}\n*(${moment
                         .unix(+dataArr[2])
@@ -127,6 +129,21 @@ export const onCallbackDataListner = (bot: TelegramBot) => {
                         },
                     }
                 );
+
+                // send message to all admins
+                const allAdmins = await User.find({ role: Roles.ADMIN });
+
+                return allAdmins.map(async (admin) => {
+                    await bot.sendMessage(
+                        admin.telegramId,
+                        `*${Text.NEW_ORDER}*\n${sendOrdersToUser({
+                            orders: [newOrder],
+                        })}`,
+                        {
+                            parse_mode: "Markdown",
+                        }
+                    );
+                });
             } catch (error) {
                 return sendError({
                     bot,

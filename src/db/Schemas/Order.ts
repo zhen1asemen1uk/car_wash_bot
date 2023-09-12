@@ -14,7 +14,7 @@ interface IOrder extends Document {
     userId: IUser;
     carBrand: string;
     carNumber: string;
-    serviceDate: Date;
+    serviceDate: Date; // TO DO: add isNew field
 }
 
 const orderSchema = new Schema(

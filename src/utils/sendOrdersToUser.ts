@@ -11,8 +11,7 @@ export const sendOrdersToUser = ({
     isAdmin?: boolean;
 }) => {
     const formattedOrders = orders.map((order) => {
-        return `
--------------------------------------------
+        return `---------------------------------------
         ${
             isAdmin
                 ? `

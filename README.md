@@ -1,12 +1,16 @@
 # Accounting of merch
 
 ## Description
-Telegram Bot for `accounting of merch`
+
+Telegram Bot for `gCarWash`
 
 ## Installation
+
 1. ```sh
- yarn`
-```
+   yarn`
+   ```
+
+````
 1.  fill `.env.development` for dev or `.env.production` for prod by `env.example`
 ---
 ## Run
@@ -14,9 +18,12 @@ Telegram Bot for `accounting of merch`
 Develop mode
 ```sh
 $ yarn dev
-```
+````
+
 ---
+
 Production mode
+
 ```sh
 $ yarn start
 ```

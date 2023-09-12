@@ -1,3 +1,4 @@
+import process from "process";
 import { EnvNames } from "../enums/env.names";
 
 export const getEnv = (enviromentName: EnvNames) => {

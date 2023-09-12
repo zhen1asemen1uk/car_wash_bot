@@ -1,6 +1,6 @@
-import TelegramBot from "node-telegram-bot-api";
-import { IAnswers, IQuestion } from "../types/types";
-import { toTranslit } from "./toTranslit";
+import TelegramBot from 'node-telegram-bot-api';
+import { IAnswers, IQuestion } from '../types/types';
+import { toTranslit } from './toTranslit';
 
 export const ask = async ({
   bot,
@@ -19,12 +19,12 @@ export const ask = async ({
       reply_markup: { remove_keyboard: true },
     });
 
-    const answer = await new Promise<string>((resolve) => {
-      bot.once("message", (msg) => {
+    const answer = await new Promise<string>(resolve => {
+      bot.once('message', msg => {
         if (msg.text) {
-          resolve(toTranslit(msg.text.toLowerCase().replace(/\s/g, "_")));
+          resolve(toTranslit(msg.text.toLowerCase().replace(/\s/g, '_')));
         } else {
-          resolve("");
+          resolve('');
         }
       });
     });

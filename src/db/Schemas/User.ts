@@ -1,5 +1,5 @@
-import mongoose, { model } from "mongoose";
-import { Roles } from "../../enums/roles";
+import mongoose, { model } from 'mongoose';
+import { Roles } from '../../enums/roles';
 
 const { Schema } = mongoose;
 
@@ -19,4 +19,4 @@ const userSchema = new Schema(
   { timestamps: true },
 );
 
-export const User = model("User", userSchema);
+export const User = model('User', userSchema);

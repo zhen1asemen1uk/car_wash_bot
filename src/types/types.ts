@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb";
+import { ObjectId } from 'mongodb';
 
 export interface IAnswers {
   [key: string]: string | number | Date | ObjectId;

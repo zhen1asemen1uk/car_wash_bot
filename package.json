@@ -12,7 +12,7 @@
     "start": "cross-env NODE_ENV=production nodemon dist/index.js",
     "build": "cross-env NODE_ENV=production npx swc src -d dist",
     "build_tsc": "cross-env NODE_ENV=production tsc ",
-    "deploy": "yarn --frozen-lockfile && yarn build_tsc && yarn start",
+    "deploy": "yarn --frozen-lockfile && yarn build && yarn start",
     "prepare": "husky install"
   },
   "dependencies": {

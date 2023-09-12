@@ -1,10 +1,8 @@
-import TelegramBot from "node-telegram-bot-api";
-import { TriggersBot } from "../enums/triggers.bot";
+import TelegramBot from 'node-telegram-bot-api';
+import { TriggersBot } from '../enums/triggers.bot';
 
-const defaultErrorMessage = "Что-то пошло не так. Попробуйте еще раз";
-const defaultErrorButtons = [
-  [{ text: TriggersBot.MY_ORDERS }, { text: TriggersBot.ADD_ORDER }],
-];
+const defaultErrorMessage = 'Что-то пошло не так. Попробуйте еще раз';
+const defaultErrorButtons = [[{ text: TriggersBot.MY_ORDERS }, { text: TriggersBot.ADD_ORDER }]];
 
 interface ISendError {
   bot: TelegramBot;

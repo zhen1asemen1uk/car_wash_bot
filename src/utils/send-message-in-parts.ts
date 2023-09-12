@@ -1,10 +1,6 @@
-import TelegramBot from "node-telegram-bot-api";
+import TelegramBot from 'node-telegram-bot-api';
 
-export const sendMessageInParts = async (
-  bot: TelegramBot,
-  chatId: number,
-  message: string,
-) => {
+export const sendMessageInParts = async (bot: TelegramBot, chatId: number, message: string) => {
   const maxMessageLength = 4096; // maximum message length in Telegram
 
   for (let i = 0; i < message.length; i += maxMessageLength) {
@@ -12,7 +8,7 @@ export const sendMessageInParts = async (
 
     await bot.sendMessage(chatId, currentPart, {
       reply_markup: {
-        keyboard: [[{ text: "На головну" }]],
+        keyboard: [[{ text: 'На головну' }]],
       },
     });
   }

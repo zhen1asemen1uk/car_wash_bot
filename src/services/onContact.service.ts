@@ -1,12 +1,12 @@
-import TelegramBot from "node-telegram-bot-api";
+import TelegramBot from 'node-telegram-bot-api';
 
-import { TriggersBot } from "../enums/triggers.bot";
-import { User } from "../db/Schemas/User";
-import { Text } from "../enums/official.text";
+import { TriggersBot } from '../enums/triggers.bot';
+import { User } from '../db/Schemas/User';
+import { Text } from '../enums/official.text';
 
 export const onContactListner = (bot: TelegramBot) => {
   // listen for incoming messages of type 'contact'
-  bot.on("contact", async (msg) => {
+  bot.on('contact', async msg => {
     // the user's id that is sending the message
     const contact_user_id = msg?.contact?.user_id;
 
@@ -39,20 +39,11 @@ export const onContactListner = (bot: TelegramBot) => {
         );
       }
 
-      return await bot.sendMessage(
-        msg.chat.id,
-        `${Text.HI_AGAINE}, ${user.fullName} 👋🏻`,
-        {
-          reply_markup: {
-            keyboard: [
-              [
-                { text: TriggersBot.MY_ORDERS },
-                { text: TriggersBot.ADD_ORDER },
-              ],
-            ],
-          },
+      return await bot.sendMessage(msg.chat.id, `${Text.HI_AGAINE}, ${user.fullName} 👋🏻`, {
+        reply_markup: {
+          keyboard: [[{ text: TriggersBot.MY_ORDERS }, { text: TriggersBot.ADD_ORDER }]],
         },
-      );
+      });
     }
   });
 };

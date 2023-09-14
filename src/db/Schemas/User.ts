@@ -1,11 +1,10 @@
-import mongoose, { model } from 'mongoose';
+import mongoose, { Model, Schema } from 'mongoose';
 import { Roles } from '../../enums/roles';
-
-const { Schema } = mongoose;
+import { IUser } from '../../types/userTypes';
 
 const userSchema = new Schema(
   {
-    // _id: { type: mongoose.Types.ObjectId, autoCreate: true }, // TO DO: check why it works
+    // _id: { type: ObjectId, autoCreate: true },
     username: { type: String, required: true },
     fullName: { type: String, required: true },
     telegramId: { type: Number, required: true },
@@ -19,4 +18,4 @@ const userSchema = new Schema(
   { timestamps: true },
 );
 
-export const User = model('User', userSchema);
+export const User: Model<IUser> = mongoose.model<IUser>('User', userSchema);

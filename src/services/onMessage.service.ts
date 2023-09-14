@@ -2,21 +2,26 @@ import TelegramBot, { Message } from 'node-telegram-bot-api';
 import moment from 'moment';
 
 import { TriggersBot } from '../enums/triggers.bot';
-
 import { Text } from '../enums/official.text';
-import { Order } from '../db/Schemas/Order';
-import { IAnswers, IQuestion } from '../types/types';
+
 import { ask } from '../utils/ask';
 import { keybordWithDates } from '../utils/keybords';
-
 import { sendOrdersToUser } from '../utils/sendOrdersToUser';
-import { User } from '../db/Schemas/User';
+
+import { userModel } from '../models/user.model';
+import { orderModel } from '../models/order.model';
+
+import { IQuestion } from '../types/types';
+import { OrderKeys } from '../types/orderTypes';
 
 export const onMessageListner = (bot: TelegramBot) => {
   bot.on('message', async (msg: Message) => {
     const chatId = msg.chat.id;
     const text = msg.text;
     const msgFromId = msg?.from?.id;
+    // console.log('text', text);
+    // console.log('msgFromId', msgFromId);
+    // console.log('chatId', chatId);
 
     if (!msgFromId || !chatId) return; // TO DO: add error handler
 
@@ -39,15 +44,14 @@ export const onMessageListner = (bot: TelegramBot) => {
       case TriggersBot.MY_ORDERS:
         // find all orders by user id from today and 11 working days
         try {
-          const user = await User.findOne({ telegramId: +msgFromId });
-          if (!user) return; // TO DO: add error message
+          const user = await userModel.getUserByTelegramId({ telegramId: +msgFromId });
 
-          const orders = await Order.find({
-            userId: user._id,
-            serviceDate: {
-              $gte: moment().startOf('day').utc().toDate(),
-              $lte: moment().add(11, 'days').endOf('day').utc().toDate(),
-            },
+          if (!user || !user._id) return; // TO DO: add error message
+
+          const orders = await orderModel.getOrdersByDate({
+            userId: user._id.toString(),
+            gte: moment().startOf('day').utc().toDate(),
+            lte: moment().add(11, 'days').endOf('day').utc().toDate(),
           });
 
           if (!orders.length)
@@ -71,7 +75,7 @@ export const onMessageListner = (bot: TelegramBot) => {
             },
           });
         } catch (error) {
-          console.log(error);
+          console.error(error);
         }
 
       case TriggersBot.ADD_ORDER:
@@ -81,9 +85,9 @@ export const onMessageListner = (bot: TelegramBot) => {
           { key: 'carNumber', question: Text.ENTER_CAR_NUMBER },
         ];
 
-        const answers: IAnswers = await ask({ bot, chatId, questions });
+        const order: OrderKeys = await ask({ bot, chatId, questions });
 
-        const keyboard = await keybordWithDates(answers);
+        const keyboard = await keybordWithDates(order);
 
         // 3 question
         return await bot.sendMessage(chatId, `${Text.CHOOSE_PART_OF_DAY}`, {
@@ -97,12 +101,9 @@ export const onMessageListner = (bot: TelegramBot) => {
         const todayDate = moment().endOf('day').utc().toDate();
         const formattedDate = moment(todayDate).format('DD.MM.YYYY');
 
-        const todayOrders = await Order.find({
-          serviceDate: {
-            $gte: moment().startOf('day').utc().toDate(),
-            $lte: todayDate,
-          },
-        }).populate('userId');
+        const todayOrders = await orderModel.getOrdersByDateWithUser({
+          date: todayDate,
+        });
 
         if (!todayOrders.length)
           return await bot.sendMessage(chatId, `Тут пусто`, {
@@ -139,12 +140,10 @@ export const onMessageListner = (bot: TelegramBot) => {
 
         const formattedTomorrowDate = moment(tomorrowDate).format('DD.MM.YYYY');
 
-        const tomorrowOrders = await Order.find({
-          serviceDate: {
-            $gte: moment().add(1, 'days').startOf('day').utc().toDate(),
-            $lte: tomorrowDate,
-          },
-        }).populate('userId');
+        const tomorrowOrders = await orderModel.getOrdersByDateWithUser({
+          gte: moment().startOf('day').utc().toDate(),
+          lte: tomorrowDate,
+        });
 
         if (!tomorrowOrders.length)
           return await bot.sendMessage(chatId, `Тут пусто`, {
@@ -181,12 +180,10 @@ export const onMessageListner = (bot: TelegramBot) => {
 
         const formattedElevenDays = moment(elevenDays).format('DD.MM.YYYY');
 
-        const allOrders = await Order.find({
-          serviceDate: {
-            $gte: moment().startOf('day').utc().toDate(),
-            $lte: elevenDays,
-          },
-        }).populate('userId');
+        const allOrders = await orderModel.getOrdersByDateWithUser({
+          gte: moment().startOf('day').utc().toDate(),
+          lte: elevenDays,
+        });
 
         if (!allOrders.length)
           return await bot.sendMessage(chatId, `Тут пусто`, {

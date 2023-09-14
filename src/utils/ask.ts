@@ -1,6 +1,7 @@
 import TelegramBot from 'node-telegram-bot-api';
-import { IAnswers, IQuestion } from '../types/types';
+import { IQuestion } from '../types/types';
 import { toTranslit } from './toTranslit';
+import { OrderKeys } from '../types/orderTypes';
 
 export const ask = async ({
   bot,
@@ -11,7 +12,10 @@ export const ask = async ({
   chatId: number;
   questions: IQuestion[];
 }) => {
-  const answers: IAnswers = {};
+  const answers: OrderKeys = {
+    carBrand: '',
+    carNumber: '',
+  };
 
   // move out to utils
   for (const { key, question } of questions) {
@@ -29,7 +33,7 @@ export const ask = async ({
       });
     });
 
-    answers[key] = answer;
+    answers[key as keyof OrderKeys] = answer;
   }
 
   return answers;

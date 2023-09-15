@@ -136,12 +136,12 @@ export const onMessageListner = (bot: TelegramBot) => {
         );
 
       case TriggersBot.TOMORROW_ORDERS:
-        const tomorrowDate = moment().add(1, 'days').endOf('day').utc().toDate();
+        const tomorrowDate = moment().add(1, 'days').endOf('day').toDate();
 
         const formattedTomorrowDate = moment(tomorrowDate).format('DD.MM.YYYY');
 
         const tomorrowOrders = await orderModel.getOrdersByDateWithUser({
-          gte: moment().startOf('day').utc().toDate(),
+          gte: moment().add(1, 'days').startOf('day').toDate(),
           lte: tomorrowDate,
         });
 
@@ -176,12 +176,12 @@ export const onMessageListner = (bot: TelegramBot) => {
         );
 
       case TriggersBot.ALL_ORDER:
-        const elevenDays = moment().add(11, 'days').endOf('day').utc().toDate();
+        const elevenDays = moment().add(11, 'days').endOf('day').toDate();
 
         const formattedElevenDays = moment(elevenDays).format('DD.MM.YYYY');
 
         const allOrders = await orderModel.getOrdersByDateWithUser({
-          gte: moment().startOf('day').utc().toDate(),
+          gte: moment().startOf('day').toDate(),
           lte: elevenDays,
         });
 

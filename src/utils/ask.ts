@@ -26,7 +26,7 @@ export const ask = async ({
     const answer = await new Promise<string>(resolve => {
       bot.once('message', msg => {
         if (msg.text) {
-          resolve(toTranslit(msg.text.toLowerCase().replace(/\s/g, '_')));
+          resolve(toTranslit(msg.text.toLowerCase().replaceAll(/\s|_/g, '.')));
         } else {
           resolve('');
         }

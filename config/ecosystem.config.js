@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: 'Telegram Bot (gCarWash)',
-      script: '../dist/index.js',
+      script: './dist/index.js',
       watch: false,
       instances: 'max',
       exec_mode: 'cluster',

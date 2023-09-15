@@ -22,7 +22,7 @@ export const sendOrdersToUser = ({
       userText = `
   Ім'я: ${user.fullName}
   Номер: [+${+user.phoneNumber}](+${+user.phoneNumber})
-  Telegram: @${user.username}`;
+  Telegram: @${user.username.replaceAll(/_/g, '\\_')} `; // low dash broke markdown
     }
 
     return `---------------------------------------

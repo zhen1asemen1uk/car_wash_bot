@@ -11,20 +11,26 @@ export const sendOrdersToUser = ({
   isAdmin?: boolean;
 }) => {
   const formattedOrders = orders.map(order => {
+    const user = order?.userId;
+
+    let userText = ``;
+    if (!user || typeof user === 'string') {
+      userText = `
+  ⛔️ Користувач був видалений з бази
+  (не тількищо, мабуть давно 🤷🏼‍♂️)`;
+    } else {
+      userText = `
+  Ім'я: ${user.fullName}
+  Номер: [+${+user.phoneNumber}](+${+user.phoneNumber})
+  Telegram: @${user.username}`;
+    }
+
     return `---------------------------------------
-        ${
-          isAdmin
-            ? `
-Ім'я: ${order?.userId?.fullName}
-Номер: [+${+order?.userId?.phoneNumber}](+${+order?.userId?.phoneNumber})
-Telegram: @${order?.userId?.username}
-`
-            : ''
-        }
-Машина: ${order.carBrand}
-Номер автомобіля: ${order.carNumber}
-Дата: ${moment(order.serviceDate).format('DD.MM.YYYY')}
-Частина дня: ${partOfDay(order.serviceDate as Date)}`;
+  ${isAdmin ? userText : ''}
+  Машина: ${order.carBrand}
+  Номер автомобіля: ${order.carNumber}
+  Дата: ${moment(order.serviceDate).format('DD.MM.YYYY')}
+  Частина дня: ${partOfDay(moment(order.serviceDate).toDate())}`;
   });
 
   return formattedOrders.join('\n');

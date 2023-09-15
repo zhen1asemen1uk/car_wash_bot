@@ -1,10 +1,10 @@
 import TelegramBot from 'node-telegram-bot-api';
 
 import { TriggersBot } from '../enums/triggers.bot';
-import { User } from '../db/Schemas/User';
 
 import { Text } from '../enums/official.text';
 import { Roles } from '../enums/roles';
+import { userModel } from '../models/user.model';
 
 // replace the value below with the Telegram TELEGRAM_API_TOKEN you receive from @BotFather
 
@@ -26,7 +26,7 @@ export const onTextListner = (bot: TelegramBot) => {
       one_time_keyboard: true,
     };
 
-    const user = await User.findOne({ telegramId: msgFromId });
+    const user = await userModel.getUserByTelegramId({ telegramId: Object(msgFromId) });
 
     if (!user) {
       // send a message with the keyboard to the user

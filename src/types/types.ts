@@ -1,10 +1,12 @@
-import { ObjectId } from 'mongodb';
+import { ObjectId } from 'mongoose';
+import { IOrder, OrderKeys } from './orderTypes';
 
 export interface IAnswers {
-  [key: string]: string | number | Date | ObjectId;
+  [key: string]: string | ObjectId | Date;
 }
 
 export interface IQuestion {
-  key: string;
+  key: IOrder['carBrand' | 'carNumber'];
+  // key: keyof IOrder;
   question: string;
 }

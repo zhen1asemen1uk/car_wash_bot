@@ -1,8 +1,10 @@
 import TelegramBot from 'node-telegram-bot-api';
 
+import { userModel } from '../models/user.model';
+
 import { TriggersBot } from '../enums/triggers.bot';
-import { User } from '../db/Schemas/User';
 import { Text } from '../enums/official.text';
+import { Roles } from '../enums/roles';
 
 export const onContactListner = (bot: TelegramBot) => {
   // listen for incoming messages of type 'contact'
@@ -17,15 +19,19 @@ export const onContactListner = (bot: TelegramBot) => {
     // check if the msg is from the user you're expecting
     if (msgFromId === contact_user_id) {
       // handle the user's phone number
-      const phone_number = msg?.contact?.phone_number;
+      const phone_number = +msg?.contact?.phone_number!;
 
-      const user = await User.findOne({ telegramId: msgFromId });
+      if (!phone_number) return; // TO DO: add error handler
+
+      const user = await userModel.getUserByTelegramId({ telegramId: msgFromId });
+
       if (!user) {
-        const new_user = await User.create({
-          username: msg?.from?.username,
-          fullName: msg?.from?.first_name,
+        const new_user = await userModel.createUser({
+          username: msg?.from?.username!,
+          fullName: msg?.from?.first_name!,
           telegramId: msgFromId,
-          phoneNumber: phone_number,
+          phoneNumber: +phone_number,
+          role: Roles.USER,
         });
 
         return await bot.sendMessage(

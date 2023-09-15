@@ -1,18 +1,16 @@
 import moment, { Moment } from 'moment-timezone';
-
 import { InlineKeyboardButton } from 'node-telegram-bot-api';
-import { IAnswers } from '../types/types';
-import { Order } from '../db/Schemas/Order';
+
 import { partOfDay } from './noon';
+import { orderModel } from '../models/order.model';
+import { OrderKeys } from '../types/orderTypes';
 
 const getAvailableDates = async (freeDates: Moment[]) => {
   const elevenDays = moment().add(11, 'days').endOf('day').toDate();
 
-  const orders = await Order.find({
-    serviceDate: {
-      $gte: moment().add(1, 'day').startOf('day').toDate(),
-      $lte: elevenDays,
-    },
+  const orders = await orderModel.getOrdersByDate({
+    gte: moment().startOf('day').utc().toDate(),
+    lte: elevenDays,
   });
 
   const newOrders = orders.map(order => {
@@ -58,7 +56,7 @@ const getRangeOfDates = async () => {
   return await getAvailableDates(freeDates);
 };
 
-export const keybordWithDates = async (answers: IAnswers): Promise<InlineKeyboardButton[][]> => {
+export const keybordWithDates = async (order: OrderKeys): Promise<InlineKeyboardButton[][]> => {
   const freeDates = await getRangeOfDates();
 
   const newKeyboard: InlineKeyboardButton[][] = [];
@@ -68,8 +66,8 @@ export const keybordWithDates = async (answers: IAnswers): Promise<InlineKeyboar
     const localDate = moment(date).tz(timezone);
 
     const formattedData = JSON.stringify([
-      answers.carBrand,
-      answers.carNumber,
+      order.carBrand,
+      order.carNumber,
       moment(localDate).unix(),
     ]);
 

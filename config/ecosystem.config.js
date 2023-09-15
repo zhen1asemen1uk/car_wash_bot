@@ -2,14 +2,15 @@ module.exports = {
   apps: [
     {
       name: 'Telegram Bot (gCarWash)',
-      script: './dist/index.js',
+      script: '../dist/index.js',
+      watch: false,
       instances: 'max',
       exec_mode: 'cluster',
       env_production: {
-        NODE_ENV: './config/.env.production',
+        NODE_ENV: 'production',
       },
       env_development: {
-        NODE_ENV: './config/.env.development',
+        NODE_ENV: 'development',
       },
     },
   ],

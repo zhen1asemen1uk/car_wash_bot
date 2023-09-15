@@ -9,7 +9,7 @@
   },
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon src/index.ts",
-    "start": "pm2 start ecosystem.config.js --env development",
+    "start": "pm2 start ./config/ecosystem.config.js",
     "build": "cross-env NODE_ENV=production npx swc src -d dist",
     "deploy": "yarn --frozen-lockfile && yarn build && yarn start",
     "prepare": "husky install"

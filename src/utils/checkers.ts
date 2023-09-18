@@ -78,6 +78,7 @@ export const checkOrder = async ({ formettedToDate, bot, chatId, order }: ICheck
       errMessage: `❌ Вибачте хтось вас випередив, спробуйте записатись знову`, // TO DO: add to time !!!!
       arrBtns: await keybordWithDates(order),
     });
+
     return false;
   }
 

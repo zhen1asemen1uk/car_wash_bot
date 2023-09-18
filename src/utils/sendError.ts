@@ -23,6 +23,9 @@ export const sendError = async ({
 }: ISendError) => {
   console.error(error);
 
+  // off send message to user if it isn't needed
+  if (!errMessage || !chatId) return;
+
   return await bot.sendMessage(
     chatId,
     errMessage,

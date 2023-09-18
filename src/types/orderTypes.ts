@@ -49,4 +49,6 @@ export interface IOrderModel {
   }) => Promise<InstanceType<typeof Order>[]>;
 
   removeOrderById: ({ _id }: { _id: string }) => Promise<InstanceType<typeof Order> | null>;
+
+  removeOldOrders: ({ lt }: { lt: Date }) => Promise<number>;
 }

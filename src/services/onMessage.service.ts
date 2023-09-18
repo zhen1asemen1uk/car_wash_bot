@@ -15,6 +15,7 @@ import { IQuestion } from '../types/types';
 import { OrderKeys } from '../types/orderTypes';
 import { inlineKbrds, kbrds } from '../utils/keyboards';
 import { simpleDate } from '../helpers/dateHelpers';
+import { sendError } from '../utils/sendError';
 
 export const onMessageListner = (bot: TelegramBot) => {
   bot.on('message', async (msg: Message) => {
@@ -27,7 +28,16 @@ export const onMessageListner = (bot: TelegramBot) => {
     console.log('text', text);
     console.log('msgFromId', msgFromId);
 
-    if (!msgFromId || !chatId) return; // TO DO: add error handler
+    if (!msgFromId || !chatId) {
+      return sendError({
+        bot,
+        error: `
+  Check the following:
+  msgFromId: ${!!msgFromId}
+  chatId: ${!!chatId}`,
+        chatId,
+      });
+    }
 
     switch (text) {
       case TriggersBot.GO_MAIN:
@@ -49,7 +59,16 @@ export const onMessageListner = (bot: TelegramBot) => {
         try {
           const user = await userModel.getUserByTelegramId({ telegramId: +msgFromId });
 
-          if (!user || !user._id) return; // TO DO: add error message
+          if (!user || !user._id) {
+            return sendError({
+              bot,
+              error: `
+  Check the following:
+  user: ${!!user}
+  user._id: ${!!user?._id}`,
+              chatId,
+            });
+          }
 
           const orders = await orderModel.getOrdersByDateWithUser({
             userId: user._id.toString(),
@@ -74,7 +93,11 @@ export const onMessageListner = (bot: TelegramBot) => {
             },
           });
         } catch (error) {
-          console.error(error);
+          return sendError({
+            bot,
+            error,
+            chatId,
+          });
         }
 
       case TriggersBot.ADD_ORDER:

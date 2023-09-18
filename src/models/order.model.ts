@@ -113,6 +113,13 @@ const orderModel: IOrderModel = {
 
     return removedOrder;
   },
+
+  removeOldOrders: async ({ lt }) => {
+    const { deletedCount } = await Order.deleteMany({ serviceDate: { $lt: lt } });
+    console.log(`Removed orders: ${deletedCount}`);
+
+    return +deletedCount;
+  },
 };
 
 export { orderModel };

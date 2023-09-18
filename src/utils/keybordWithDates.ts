@@ -1,9 +1,10 @@
 import moment, { Moment } from 'moment-timezone';
 import { InlineKeyboardButton } from 'node-telegram-bot-api';
 
-import { partOfDay } from './noon';
 import { orderModel } from '../models/order.model';
 import { OrderKeys } from '../types/orderTypes';
+import { partOfDay, simpleDate } from '../helpers/dateHelpers';
+import { inlineKbrds } from './keyboards';
 
 const getAvailableDates = async (freeDates: Moment[]) => {
   const elevenDays = moment().add(11, 'days').endOf('day').toDate();
@@ -63,7 +64,7 @@ export const keybordWithDates = async (order: OrderKeys): Promise<InlineKeyboard
 
   freeDates.map(date => {
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const localDate = moment(date).tz(timezone);
+    const localDate = moment(date).tz(timezone).toDate();
 
     const formattedData = JSON.stringify([
       order.carBrand,
@@ -71,15 +72,11 @@ export const keybordWithDates = async (order: OrderKeys): Promise<InlineKeyboard
       moment(localDate).unix(),
     ]);
 
-    const formattedText =
-      moment(localDate).format('DD.MM.YYYY') + ' | ' + partOfDay(moment(localDate).toDate());
+    const formattedText = simpleDate(localDate) + ' | ' + partOfDay(moment(localDate).toDate());
 
-    newKeyboard.push([
-      {
-        text: formattedText,
-        callback_data: `${formattedData}`,
-      },
-    ]);
+    newKeyboard.push(
+      inlineKbrds.order.elOflistFreeDates({ text: formattedText, formattedData: formattedData }),
+    );
   });
 
   return newKeyboard;

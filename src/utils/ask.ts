@@ -1,6 +1,6 @@
 import TelegramBot from 'node-telegram-bot-api';
 import { IQuestion } from '../types/types';
-import { toTranslit } from './toTranslit';
+import { toTranslit } from '../helpers/textHelper';
 import { OrderKeys } from '../types/orderTypes';
 
 export const ask = async ({

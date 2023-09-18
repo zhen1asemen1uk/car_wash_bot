@@ -23,7 +23,7 @@ const orderModel: IOrderModel = {
   },
 
   getOrdersByDate: async ({ userId, date, gte, lte }) => {
-    let query: { userId?: string; serviceDate: Date | { $gte?: Date; $lte?: Date } } = {
+    let query: { userId?: string; serviceDate?: Date | { $gte?: Date; $lte?: Date } } = {
       userId: '',
       serviceDate: {},
     };
@@ -64,8 +64,17 @@ const orderModel: IOrderModel = {
     return orderUser;
   },
 
-  getOrdersByDateWithUser: async ({ date, gte, lte }) => {
-    let query = { serviceDate: {} };
+  getOrdersByDateWithUser: async ({ userId, date, gte, lte }) => {
+    let query: { userId?: string; serviceDate?: Date | { $gte?: Date; $lte?: Date } } = {
+      userId: '',
+      serviceDate: {},
+    };
+
+    if (userId) {
+      query['userId'] = userId;
+    } else {
+      delete query['userId'];
+    }
 
     if (date) {
       query = {

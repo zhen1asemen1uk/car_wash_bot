@@ -37,10 +37,12 @@ export interface IOrderModel {
   }) => Promise<InstanceType<typeof Order>[]>;
 
   getOrdersByDateWithUser: ({
+    userId,
     date,
     gte,
     lte,
   }: {
+    userId?: string;
     date?: Date;
     gte?: Date;
     lte?: Date;

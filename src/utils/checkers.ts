@@ -4,11 +4,11 @@ import TelegramBot from 'node-telegram-bot-api';
 import { Order } from '../db/Schemas/Order';
 import { User } from '../db/Schemas/User';
 
-import { keybordWithDates } from './keybords';
+import { keybordWithDates } from './keybordWithDates';
 
 import { orderModel } from '../models/order.model';
 
-import { sendError } from './error';
+import { sendError } from './sendError';
 
 interface ICheckUser {
   bot: TelegramBot;

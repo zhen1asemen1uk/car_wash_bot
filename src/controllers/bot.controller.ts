@@ -9,21 +9,12 @@ import { onMessageListner } from '../services/onMessage.service';
 
 const TELEGRAM_API_TOKEN = getEnv(EnvNames.TELEGRAM_API_TOKEN);
 
-export const telegram_bot = () => {
-  try {
-    // Create a bot that uses 'polling' to fetch new updates
-    const bot = new TelegramBot(TELEGRAM_API_TOKEN!, { polling: true });
+// Create a bot that uses 'polling' to fetch new updates
+const bot = new TelegramBot(TELEGRAM_API_TOKEN!, { polling: true });
 
-    onTextListner(bot);
-
-    onContactListner(bot);
-
-    onMessageListner(bot);
-
-    onCallbackDataListner(bot);
-
-    console.log('Bot started => ✅');
-  } catch (error) {
-    console.error(error);
-  }
+export const botController = {
+  listenToBotText: () => onTextListner(bot),
+  listenToBotContact: () => onContactListner(bot),
+  listenToBotMessage: () => onMessageListner(bot),
+  listenToBotCallbackData: () => onCallbackDataListner(bot),
 };

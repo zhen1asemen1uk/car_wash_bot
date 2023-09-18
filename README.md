@@ -2,7 +2,7 @@
 
 ## Description
 
-Telegram Bot for [link](https://t.me/gCarWash_bot)
+Telegram Bot [link](https://t.me/gCarWash_bot)
 
 ## Installation
 

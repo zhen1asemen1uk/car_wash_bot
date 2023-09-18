@@ -1,7 +1,7 @@
 import moment from 'moment';
-import { partOfDay } from './noon';
 
 import { Order } from '../db/Schemas/Order';
+import { partOfDay, simpleDate } from '../helpers/dateHelpers';
 
 export const sendOrdersToUser = ({
   orders,
@@ -14,7 +14,15 @@ export const sendOrdersToUser = ({
     const user = order?.userId;
 
     let userText = ``;
-    if (!user || typeof user === 'string') {
+    // check if user was deleted
+    if (
+      !user ||
+      typeof user === 'string' ||
+      !('fullName' in user) ||
+      !('phoneNumber' in user) ||
+      !('phoneNumber' in user) ||
+      !('username' in user)
+    ) {
       userText = `
   ⛔️ Користувач був видалений з бази
   (не тількищо, мабуть давно 🤷🏼‍♂️)`;
@@ -22,14 +30,14 @@ export const sendOrdersToUser = ({
       userText = `
   Ім'я: ${user.fullName}
   Номер: [+${+user.phoneNumber}](+${+user.phoneNumber})
-  Telegram: @${user.username.replaceAll(/_/g, '\\_')} `; // low dash broke markdown
+  Telegram: @${user.username.replaceAll(/_/g, '\\_')} `; // lowdash broke markdown
     }
 
     return `---------------------------------------
   ${isAdmin ? userText : ''}
   Машина: ${order.carBrand}
   Номер автомобіля: ${order.carNumber}
-  Дата: ${moment(order.serviceDate).format('DD.MM.YYYY')}
+  Дата: ${simpleDate(order.serviceDate)}
   Частина дня: ${partOfDay(moment(order.serviceDate).toDate())}`;
   });
 

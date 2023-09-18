@@ -1,5 +1,4 @@
 export enum Text {
-  SHARE_PHONE_NUMBER_PLS = 'Будь ласка, поділіться номером телефона ☎️',
   HI_AGAINE = 'Привіт знову',
   HI_ADMIN = 'Привіт ви АДМІН',
   YOU_ARE_SUCCESSFULLY_REGISTERED = 'ви успішно зареєстровані в системі ✅',

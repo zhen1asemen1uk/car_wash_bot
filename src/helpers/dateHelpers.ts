@@ -1,5 +1,9 @@
 import moment from 'moment';
 
+export const simpleDate = (date: Date) => {
+  return moment(date).format('DD.MM.YYYY');
+};
+
 export const partOfDay = (date: Date) => {
   const time = moment(date);
 

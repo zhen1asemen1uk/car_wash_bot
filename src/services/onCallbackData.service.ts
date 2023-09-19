@@ -7,8 +7,8 @@ import { sendError } from '../utils/sendError';
 import { checkOrder, checkUser } from '../utils/checkers';
 
 import { sendOrdersToUser } from '../utils/sendOrdersToUser';
-import { orderModel } from '../models/order.model';
-import { userModel } from '../models/user.model';
+import { orderModel } from '../models/orderModel';
+import { userModel } from '../models/userModel';
 
 import { Order } from '../db/Schemas/Order';
 import { kbrds } from '../utils/keyboards';

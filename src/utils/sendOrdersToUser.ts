@@ -2,6 +2,7 @@ import moment from 'moment';
 
 import { Order } from '../db/Schemas/Order';
 import { partOfDay, simpleDate } from '../helpers/dateHelpers';
+import { Text } from '../enums/official.text';
 
 export const sendOrdersToUser = ({
   orders,
@@ -20,25 +21,22 @@ export const sendOrdersToUser = ({
       typeof user === 'string' ||
       !('fullName' in user) ||
       !('phoneNumber' in user) ||
-      !('phoneNumber' in user) ||
       !('username' in user)
     ) {
-      userText = `
-  ⛔️ Користувач був видалений з бази
-  (не тількищо, мабуть давно 🤷🏼‍♂️)`;
+      userText = Text.USER_WAS_DELETED;
     } else {
       userText = `
-  Ім'я: ${user.fullName}
-  Номер: [+${+user.phoneNumber}](+${+user.phoneNumber})
-  Telegram: @${user.username.replaceAll(/_/g, '\\_')} `; // lowdash broke markdown
+  ${Text.NAME}: ${user.fullName}
+  ${Text.NUMBER}: [+${+user.phoneNumber}](+${+user.phoneNumber})
+  ${Text.TG}: @${user.username.replaceAll(/_/g, '\\_')} `; // lowdash broke markdown
     }
 
     return `---------------------------------------
   ${isAdmin ? userText : ''}
-  Машина: ${order.carBrand}
-  Номер автомобіля: ${order.carNumber}
-  Дата: ${simpleDate(order.serviceDate)}
-  Частина дня: ${partOfDay(moment(order.serviceDate).toDate())}`;
+  ${Text.CAR}: ${order.carBrand}
+  ${Text.CAR_BRAND}: ${order.carNumber}
+  ${Text.DATE}: ${simpleDate(order.serviceDate)}
+  ${Text.PART_OF_DAY}: ${partOfDay(moment(order.serviceDate).toDate())}`;
   });
 
   return formattedOrders.join('\n');

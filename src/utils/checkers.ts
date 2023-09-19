@@ -6,9 +6,10 @@ import { User } from '../db/Schemas/User';
 
 import { keybordWithDates } from './keybordWithDates';
 
-import { orderModel } from '../models/order.model';
+import { orderModel } from '../models/orderModel';
 
 import { sendError } from './sendError';
+import { Text } from '../enums/official.text';
 
 interface ICheckUser {
   bot: TelegramBot;
@@ -25,7 +26,7 @@ export const checkUser = async ({ bot, user, chatId, order, msgFromId }: ICheckU
       error: 'User not exists',
       chatId,
       inlineBoard: true,
-      errMessage: `❌ Сталася неочікувана помилка.\nЗверніться до адміністратора`,
+      errMessage: Text.SOMETHING_WENT_WRONG,
       arrBtns: await keybordWithDates(order),
     });
     return false;
@@ -58,7 +59,7 @@ export const checkOrder = async ({ formettedToDate, bot, chatId, order }: ICheck
       bot,
       error: 'User already exists',
       chatId,
-      errMessage: `❌ Вибачте ви вже записалися.\nПриходьте після того, як ваш автомобіль помиють`, // TO DO: add to time !!!!
+      errMessage: Text.SOMETHING_WENT_WRONG,
     });
 
     return false;
@@ -75,7 +76,7 @@ export const checkOrder = async ({ formettedToDate, bot, chatId, order }: ICheck
       error: 'Order already exists',
       chatId,
       inlineBoard: true,
-      errMessage: `❌ Вибачте хтось вас випередив, спробуйте записатись знову`, // TO DO: add to time !!!!
+      errMessage: Text.SOMETHING_WENT_WRONG,
       arrBtns: await keybordWithDates(order),
     });
 

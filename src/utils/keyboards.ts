@@ -1,5 +1,6 @@
-import { TriggersBot } from '../enums/triggers.bot';
 import { IInlineKbrds, IKbrds } from '../types/kbrdsTypes';
+import { Text } from '../enums/official.text';
+import { TriggersBot } from '../enums/triggers.bot';
 
 const kbrds: IKbrds = {
   service: {
@@ -30,10 +31,10 @@ const kbrds: IKbrds = {
 
 const inlineKbrds: IInlineKbrds = {
   order: {
-    myOrer: ({ date, orderId }) => [
+    myOrder: ({ date, orderId }) => [
       [
         {
-          text: `Видалити ${date}`,
+          text: `${Text.DELETE} ${date}`,
           callback_data: `{"removeId":"${orderId}"}`,
         },
       ],

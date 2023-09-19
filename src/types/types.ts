@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongoose';
-import { IOrder, OrderKeys } from './orderTypes';
+import { IOrder } from './orderTypes';
 
 export interface IAnswers {
   [key: string]: string | ObjectId | Date;

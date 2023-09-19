@@ -22,7 +22,7 @@ export interface IKbrds {
 
 export interface IInlineKbrds {
   order: {
-    myOrer: (args: { date: string; orderId: string }) => InlineKeyboardButton[][];
+    myOrder: (args: { date: string; orderId: string }) => InlineKeyboardButton[][];
     elOflistFreeDates: (args: { text: string; formattedData: string }) => InlineKeyboardButton[];
   };
 }

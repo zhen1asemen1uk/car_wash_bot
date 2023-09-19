@@ -4,7 +4,7 @@ import { TriggersBot } from '../enums/triggers.bot';
 
 import { Text } from '../enums/official.text';
 import { Roles } from '../enums/roles';
-import { userModel } from '../models/user.model';
+import { userModel } from '../models/userModel';
 import { kbrds } from '../utils/keyboards';
 
 export const onTextListner = (bot: TelegramBot) => {

@@ -8,8 +8,8 @@ import { ask } from '../utils/ask';
 import { keybordWithDates } from '../utils/keybordWithDates';
 import { sendOrdersToUser } from '../utils/sendOrdersToUser';
 
-import { userModel } from '../models/user.model';
-import { orderModel } from '../models/order.model';
+import { userModel } from '../models/userModel';
+import { orderModel } from '../models/orderModel';
 
 import { IQuestion } from '../types/types';
 import { OrderKeys } from '../types/orderTypes';
@@ -86,7 +86,7 @@ export const onMessageListner = (bot: TelegramBot) => {
           return await bot.sendMessage(chatId, '*Замовлення:*\n' + sendOrdersToUser({ orders }), {
             parse_mode: 'Markdown',
             reply_markup: {
-              inline_keyboard: inlineKbrds.order.myOrer({
+              inline_keyboard: inlineKbrds.order.myOrder({
                 date: simpleDate(orders[0].serviceDate),
                 orderId: orders[0]._id.toString(),
               }),
@@ -136,7 +136,7 @@ export const onMessageListner = (bot: TelegramBot) => {
 
         return await bot.sendMessage(
           chatId,
-          `*Сьогодні* (${formattedDate})👇🏻:\n${sendOrdersToUser({
+          `*${Text.TODAY}* (${formattedDate})👇🏻:\n${sendOrdersToUser({
             orders: todayOrders,
             isAdmin: true,
           })}`,
@@ -167,7 +167,7 @@ export const onMessageListner = (bot: TelegramBot) => {
 
         return await bot.sendMessage(
           chatId,
-          `*Завтра* (${formattedTomorrowDate})👇🏻:\n${sendOrdersToUser({
+          `*${Text.TOMORROW}* (${formattedTomorrowDate})👇🏻:\n${sendOrdersToUser({
             orders: tomorrowOrders,
             isAdmin: true,
           })}`,
@@ -198,7 +198,7 @@ export const onMessageListner = (bot: TelegramBot) => {
 
         return await bot.sendMessage(
           chatId,
-          `*Всі записи до (${formattedElevenDays})*👇🏻:\n${sendOrdersToUser({
+          `*${Text.ALL_ORDERS_TO} (${formattedElevenDays})*👇🏻:\n${sendOrdersToUser({
             orders: allOrders,
             isAdmin: true,
           })}`,

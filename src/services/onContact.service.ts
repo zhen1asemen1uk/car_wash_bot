@@ -1,6 +1,6 @@
 import TelegramBot from 'node-telegram-bot-api';
 
-import { userModel } from '../models/user.model';
+import { userModel } from '../models/userModel';
 
 import { Text } from '../enums/official.text';
 import { Roles } from '../enums/roles';

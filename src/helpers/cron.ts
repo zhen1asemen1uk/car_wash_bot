@@ -1,7 +1,7 @@
 import { CronJob } from 'cron';
 import * as os from 'os';
 import * as fs from 'fs';
-import { orderModel } from '../models/order.model';
+import { orderModel } from '../models/orderModel';
 import { simpleDate } from './dateHelpers';
 
 // Cron job format

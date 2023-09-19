@@ -1,6 +1,6 @@
 import TelegramBot from 'node-telegram-bot-api';
 
-import { getEnv } from '../helpers/env_helper';
+import { getEnv } from '../helpers/envHelper';
 import { EnvNames } from '../enums/env.names';
 import { onTextListner } from '../services/onText.service';
 import { onContactListner } from '../services/onContact.service';

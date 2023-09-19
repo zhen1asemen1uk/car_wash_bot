@@ -1,4 +1,5 @@
 import moment from 'moment';
+import { Text } from '../enums/official.text';
 
 export const simpleDate = (date: Date) => {
   return moment(date).format('DD.MM.YYYY');
@@ -7,13 +8,11 @@ export const simpleDate = (date: Date) => {
 export const partOfDay = (date: Date) => {
   const time = moment(date);
 
-  const noon = time.clone().hour(13); // Обід
+  const noon = time.clone().hour(13); // Noon
 
   if (time.isBefore(noon)) {
-    // return "До обіду";
-    return 'з 9:00 до 13:00 ☀️';
+    return Text.MORNING;
   } else {
-    // return "Після обіду";
-    return 'з 13:00 до 18:00 🌆';
+    return Text.AFTERNOON;
   }
 };

@@ -1,8 +1,8 @@
 import express from 'express';
-import { getEnv } from './helpers/env_helper';
+import { getEnv } from './helpers/envHelper';
 import { startDb } from './db/mongodb';
 
-import './helpers/dotenv-loader';
+import './helpers/dotenvLoader';
 import { botController } from './controllers/bot.controller';
 import { EnvNames } from './enums/env.names';
 import { clearDbCron } from './helpers/cron';

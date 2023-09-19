@@ -1,7 +1,7 @@
 import moment, { Moment } from 'moment-timezone';
 import { InlineKeyboardButton } from 'node-telegram-bot-api';
 
-import { orderModel } from '../models/order.model';
+import { orderModel } from '../models/orderModel';
 import { OrderKeys } from '../types/orderTypes';
 import { partOfDay, simpleDate } from '../helpers/dateHelpers';
 import { inlineKbrds } from './keyboards';

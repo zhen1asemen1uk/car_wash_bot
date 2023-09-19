@@ -1,8 +1,9 @@
 import TelegramBot from 'node-telegram-bot-api';
+import { kbrds } from './keyboards';
 import { TriggersBot } from '../enums/triggers.bot';
 
-const defaultErrorMessage = 'Что-то пошло не так. Попробуйте еще раз';
-const defaultErrorButtons = [[{ text: TriggersBot.MY_ORDERS }, { text: TriggersBot.ADD_ORDER }]];
+const defaultErrorMessage = TriggersBot.SOMETHING_WENT_WRONG;
+const defaultErrorButtons = kbrds.orders.ordersMenu;
 
 interface ISendError {
   bot: TelegramBot;
@@ -21,6 +22,9 @@ export const sendError = async ({
   arrBtns = defaultErrorButtons,
 }: ISendError) => {
   console.error(error);
+
+  // off send message to user if it isn't needed
+  if (!errMessage || !chatId) return;
 
   return await bot.sendMessage(
     chatId,

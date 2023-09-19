@@ -1,5 +1,4 @@
 export const toTranslit = (str: string) => {
-  // Створюємо карту для перетворення символів кирилиці на їхні відповідні символи трансліту.
   type TranslitMap = {
     [key: string]: string;
   };

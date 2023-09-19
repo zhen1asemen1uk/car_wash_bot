@@ -1,28 +1,41 @@
 import TelegramBot from 'node-telegram-bot-api';
 
-import { userModel } from '../models/user.model';
+import { userModel } from '../models/userModel';
 
-import { TriggersBot } from '../enums/triggers.bot';
 import { Text } from '../enums/official.text';
 import { Roles } from '../enums/roles';
+import { kbrds } from '../utils/keyboards';
+import { sendError } from '../utils/sendError';
 
 export const onContactListner = (bot: TelegramBot) => {
   // listen for incoming messages of type 'contact'
   bot.on('contact', async msg => {
-    // the user's id that is sending the message
     const contact_user_id = msg?.contact?.user_id;
-
-    // the user's id that is receiving the message
     const msgFromId = msg?.from?.id;
-    if (!msgFromId) return; // TO DO: add error handler
+    const phone_number = +msg?.contact?.phone_number!;
+    const chatId = msg?.chat?.id!;
+
+    console.log('-----------(onContact)------------');
+    console.log('contact_user_id', contact_user_id);
+    console.log('msgFromId', msgFromId);
+    console.log('phone_number', phone_number);
+    console.log('chatId', chatId);
+
+    if (!msgFromId || !phone_number) {
+      return sendError({
+        bot,
+        error: `
+  Check the following:
+  chatId: ${chatId}
+  msgFromId: ${msgFromId}
+  phone_number: ${phone_number}
+  contact_user_id: ${contact_user_id}`,
+        chatId,
+      });
+    }
 
     // check if the msg is from the user you're expecting
     if (msgFromId === contact_user_id) {
-      // handle the user's phone number
-      const phone_number = +msg?.contact?.phone_number!;
-
-      if (!phone_number) return; // TO DO: add error handler
-
       const user = await userModel.getUserByTelegramId({ telegramId: msgFromId });
 
       if (!user) {
@@ -39,7 +52,7 @@ export const onContactListner = (bot: TelegramBot) => {
           `${new_user.fullName} ${Text.YOU_ARE_SUCCESSFULLY_REGISTERED}`,
           {
             reply_markup: {
-              keyboard: [[{ text: TriggersBot.ADD_ORDER }]],
+              keyboard: kbrds.orders.addOrder,
             },
           },
         );
@@ -47,7 +60,7 @@ export const onContactListner = (bot: TelegramBot) => {
 
       return await bot.sendMessage(msg.chat.id, `${Text.HI_AGAINE}, ${user.fullName} 👋🏻`, {
         reply_markup: {
-          keyboard: [[{ text: TriggersBot.MY_ORDERS }, { text: TriggersBot.ADD_ORDER }]],
+          keyboard: kbrds.orders.ordersMenu,
         },
       });
     }

@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
-import { getEnv } from '../helpers/env_helper';
-import '../helpers/dotenv-loader';
+import { getEnv } from '../helpers/envHelper';
+import '../helpers/dotenvLoader';
 import { EnvNames } from '../enums/env.names';
 
 const DB_LOGIN = getEnv(EnvNames.DB_LOGIN);

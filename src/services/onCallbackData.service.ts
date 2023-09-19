@@ -2,33 +2,42 @@ import TelegramBot, { CallbackQuery } from 'node-telegram-bot-api';
 import moment from 'moment';
 
 import { Text } from '../enums/official.text';
-import { TriggersBot } from '../enums/triggers.bot';
 
-import { partOfDay } from '../utils/noon';
-import { sendError } from '../utils/error';
+import { sendError } from '../utils/sendError';
 import { checkOrder, checkUser } from '../utils/checkers';
 
 import { sendOrdersToUser } from '../utils/sendOrdersToUser';
-import { orderModel } from '../models/order.model';
-import { userModel } from '../models/user.model';
+import { orderModel } from '../models/orderModel';
+import { userModel } from '../models/userModel';
 
 import { Order } from '../db/Schemas/Order';
+import { kbrds } from '../utils/keyboards';
+import { partOfDay, simpleDate } from '../helpers/dateHelpers';
 
 export const onCallbackDataListner = (bot: TelegramBot) => {
   // Listen for any kind of message. There are different kinds of messages.
   bot.on('callback_query', async (query: CallbackQuery) => {
-    const chatId = query?.message?.chat.id;
-    // const text = query?.message?.text;
+    const chatId = query?.message?.chat.id!;
     const msgFromId = query?.from?.id;
     const { data } = query;
+    // const text = query?.message?.text;
 
-    if (!msgFromId || !chatId || !data) return; // TO DO: add error handler
-    // console.log("-----------------------");
-    // console.log("query", query);
-    // console.log("query?.message", query?.message);
-    // console.log("text =>", text);
-    // console.log("data =>", data);
-    // console.log("-----------------------");
+    if (!msgFromId || !data) {
+      return sendError({
+        bot,
+        errMessage: Text.SOMETHING_WENT_WRONG,
+        error: `
+  msgFromId: ${!!msgFromId}
+  chatId: ${!!chatId}
+  data: ${!!data}`,
+        chatId,
+      });
+    }
+    console.log('-----------(onCallbackData)------------');
+    console.log('chatId', chatId);
+    console.log('msgFromId', msgFromId);
+    console.log('data', data);
+    // console.log('text', text);
 
     // const dateRegex = /^\d{2}\.\d{2}\.\d{4}$/;
     // const unixTimeStampPattern = /^\d{10}$/;
@@ -50,7 +59,7 @@ export const onCallbackDataListner = (bot: TelegramBot) => {
             {
               parse_mode: 'Markdown',
               reply_markup: {
-                keyboard: [[{ text: TriggersBot.ADD_ORDER }]],
+                keyboard: kbrds.orders.addOrder,
               },
             },
           );
@@ -77,7 +86,16 @@ export const onCallbackDataListner = (bot: TelegramBot) => {
 
         const user = await userModel.getUserByTelegramId({ telegramId: +msgFromId });
 
-        if (!user) return; // TO DO: add error handler
+        if (!user) {
+          return sendError({
+            bot,
+            errMessage: Text.SOMETHING_WENT_WRONG,
+            error: `
+            User not found by telegramId: ${msgFromId}
+            user: ${user}`,
+            chatId,
+          });
+        }
 
         const strId = user!._id;
 
@@ -103,20 +121,31 @@ export const onCallbackDataListner = (bot: TelegramBot) => {
           order,
         });
 
-        if (!userChecker || !orderChecker) return; // TO DO: add error handler
+        if (!userChecker || !orderChecker) {
+          return sendError({
+            bot,
+            errMessage: '',
+            error: `
+  Checkers failed:
+  userChecker: ${!!userChecker}
+  orderChecker: ${!!orderChecker}
+            `,
+            chatId,
+          });
+        }
 
         // create order
         const newOrder = await orderModel.createOrder(order);
 
         await bot.sendMessage(
           chatId,
-          `${Text.ORDER_CREATED}\n*(${moment.unix(+dataArr[2]).format('DD.MM.YYYY')}) ${partOfDay(
+          `${Text.ORDER_CREATED}\n*(${simpleDate(moment.unix(+dataArr[2]).toDate())}) ${partOfDay(
             formettedToDate,
           )}*`,
           {
             parse_mode: 'Markdown',
             reply_markup: {
-              keyboard: [[{ text: TriggersBot.MY_ORDERS }, { text: TriggersBot.ADD_ORDER }]],
+              keyboard: kbrds.orders.ordersMenu,
             },
           },
         );
@@ -142,7 +171,12 @@ export const onCallbackDataListner = (bot: TelegramBot) => {
             console.error(
               `Can not send message to admin, the problem with Chat ID: ${admin.telegramId}\nUser: ${admin.fullName}`,
             );
-            console.error(error);
+
+            return sendError({
+              bot,
+              error,
+              chatId,
+            });
           }
         });
       } catch (error) {
@@ -151,7 +185,7 @@ export const onCallbackDataListner = (bot: TelegramBot) => {
           error,
           chatId,
           errMessage: Text.SOMETHING_WENT_WRONG,
-          arrBtns: [[{ text: TriggersBot.MY_ORDERS }, { text: TriggersBot.ADD_ORDER }]],
+          arrBtns: kbrds.orders.ordersMenu,
         });
       }
     }

@@ -4,51 +4,39 @@ import { TriggersBot } from '../enums/triggers.bot';
 
 import { Text } from '../enums/official.text';
 import { Roles } from '../enums/roles';
-import { userModel } from '../models/user.model';
-
-// replace the value below with the Telegram TELEGRAM_API_TOKEN you receive from @BotFather
+import { userModel } from '../models/userModel';
+import { kbrds } from '../utils/keyboards';
 
 export const onTextListner = (bot: TelegramBot) => {
   // listen for messages that match the /start command
   bot.onText(/\/start/, async msg => {
     const msgFromId = msg?.from?.id;
     const chatId = msg.chat.id;
-    const keyboard = {
-      keyboard: [
-        [
-          {
-            text: `${Text.SHARE_PHONE_NUMBER_PLS}:`,
-            request_contact: true,
-          },
-        ],
-      ],
-      resize_keyboard: true,
-      one_time_keyboard: true,
-    };
+
+    console.log('-----------(onText)------------');
+    console.log('chatId', chatId);
+    console.log('msgFromId', msgFromId);
 
     const user = await userModel.getUserByTelegramId({ telegramId: Object(msgFromId) });
 
     if (!user) {
       // send a message with the keyboard to the user
-      return await bot.sendMessage(chatId, `${Text.SHARE_PHONE_NUMBER_PLS}:`, {
-        reply_markup: keyboard,
+      return await bot.sendMessage(chatId, `${TriggersBot.SHARE_PHONE_NUMBER_PLS}:`, {
+        reply_markup: {
+          keyboard: kbrds.users.contact,
+          one_time_keyboard: true,
+        },
       });
     } else if (user.role.includes(Roles.ADMIN)) {
       return await bot.sendMessage(chatId, `${Text.HI_ADMIN}, ${user.fullName} 👋🏻`, {
         reply_markup: {
-          keyboard: [
-            [{ text: TriggersBot.TODAY_ORDERS }],
-            [{ text: TriggersBot.TOMORROW_ORDERS }],
-            [{ text: TriggersBot.ALL_ORDER }],
-          ],
-          resize_keyboard: true,
+          keyboard: kbrds.orders.ordersMenuAdm,
         },
       });
     } else {
       return await bot.sendMessage(chatId, `${Text.HI_AGAINE}, ${user.fullName} 👋🏻`, {
         reply_markup: {
-          keyboard: [[{ text: TriggersBot.MY_ORDERS }, { text: TriggersBot.ADD_ORDER }]],
-          resize_keyboard: true,
+          keyboard: kbrds.orders.ordersMenu,
         },
       });
     }

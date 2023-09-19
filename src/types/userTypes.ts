@@ -16,9 +16,15 @@ export interface IUserModel {
   createUser: ({
     username,
     fullName,
-    telegramId,
     phoneNumber,
     role,
+    telegramId,
+  }: {
+    username: string;
+    fullName: string;
+    phoneNumber: number;
+    role: Roles.ADMIN | Roles.USER;
+    telegramId: number;
   }) => Promise<InstanceType<typeof User>>;
 
   getUserByTelegramId: ({

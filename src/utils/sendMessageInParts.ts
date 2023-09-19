@@ -1,4 +1,6 @@
 import TelegramBot from 'node-telegram-bot-api';
+import { TriggersBot } from '../enums/triggers.bot';
+import { kbrds } from './keyboards';
 
 export const sendMessageInParts = async (bot: TelegramBot, chatId: number, message: string) => {
   const maxMessageLength = 4096; // maximum message length in Telegram
@@ -8,7 +10,7 @@ export const sendMessageInParts = async (bot: TelegramBot, chatId: number, messa
 
     await bot.sendMessage(chatId, currentPart, {
       reply_markup: {
-        keyboard: [[{ text: 'На головну' }]],
+        keyboard: kbrds.service.goMain,
       },
     });
   }

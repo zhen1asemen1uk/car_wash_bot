@@ -1,5 +1,4 @@
 import TelegramBot from 'node-telegram-bot-api';
-import { TriggersBot } from '../enums/triggers.bot';
 import { kbrds } from './keyboards';
 
 export const sendMessageInParts = async (bot: TelegramBot, chatId: number, message: string) => {

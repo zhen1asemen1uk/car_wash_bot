@@ -1,7 +1,7 @@
 export enum TriggersBot {
   HELLO = 'Привіт 👋🏻',
   GO_MAIN = 'На головну 🏠',
-  ADD_ORDER = 'Записатись на мийку 🚗',
+  ADD_ORDER = 'Записатись на масаж �🏼‍♂️',
   MY_ORDERS = 'Мої записи 📝',
   HERE_EMPTY = 'Тут пусто 🤷🏼‍♂️',
   CANCEL = 'Відмінити ❌',
